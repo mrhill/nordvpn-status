@@ -92,7 +92,6 @@ const VPNStatusIndicator = GObject.registerClass(
             // Add the indicator to the indicator bar
             this._indicator = this._addIndicator();
             this._indicator.icon_name = 'network-vpn-symbolic';
-            this._indicator.visible = false;
 
             // Build a menu
 
@@ -162,11 +161,10 @@ const VPNStatusIndicator = GObject.registerClass(
          * @private
          */
         _update(vpnStatus) {
-            // Update the panel button
-            this._indicator.visible = vpnStatus.connected;
-            this._item.label.text = `NordVPN ${vpnStatus.status}`;
-
             if (vpnStatus.connected) {
+                this._indicator.style = ''; // clear panel button color
+                this._item.label.text = `NordVPN ${vpnStatus.status} - ${vpnStatus.country}`;
+
                 if (!this._disconnectAction)
                     this._disconnectAction = this._item.menu.addAction('Disconnect', this._disconnect.bind(this));
 
@@ -175,6 +173,9 @@ const VPNStatusIndicator = GObject.registerClass(
                     this._connectAction = null;
                 }
             } else {
+                this._indicator.style = 'color: red';
+                this._item.label.text = `NordVPN ${vpnStatus.status}`;
+
                 if (!this._connectAction)
                     this._connectAction = this._item.menu.addAction('Connect', this._connect.bind(this));
 
